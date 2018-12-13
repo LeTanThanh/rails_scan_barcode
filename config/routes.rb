@@ -1,3 +1,6 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
+  root "scan#idex"
+
+  get "/dbr", to: "scan#dbr"
+  get "/dbr_preview", to: "scan#dbr_preview"
 end
