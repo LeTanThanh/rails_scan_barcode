@@ -381,12 +381,13 @@ var playvideo = function(deviceId) {
 };
 
 var isLooping = false;
-var loopReadVideo = function(){
-  if(!isLooping){
+var loopReadVideo = function() {
+  if(!isLooping) {
     return;
   }
+
   var video = $('#video-back')[0];
-  if(video.paused){
+  if(video.paused) {
     return setTimeout(loopReadVideo, 1000);
   }
 
@@ -395,21 +396,24 @@ var loopReadVideo = function(){
   var videoRealW = video.videoWidth;
   var videoRealH = video.videoHeight;
   var sx, sy, sWidth, sHeight, dWidth, dHeight;
-  if(bReadFullRegion){
+  
+  if(bReadFullRegion) {
     sx = sy = 0;
     sWidth = dWidth = videoRealW;
     sHeight = dHeight = videoRealH;
-  }else{
+  } else {
     var vw = $(document).width();
     var vh = $(document).height();
     var videoInDocRealW, videoInDocRealH;
+    
     if(vw / vh < videoRealW / videoRealH){
       videoInDocRealW = vw / vh * videoRealH;
       videoInDocRealH = videoRealH;
-    }else{
+    } else {
       videoInDocRealW = videoRealW;
       videoInDocRealH = vh / vw * videoRealW;
     }
+
     var regionRealWH = Math.round(/*0.6 * */Math.min(videoInDocRealW, videoInDocRealH));//looks like 0.6, real is 1
     sx = Math.round((videoRealW - regionRealWH)/2);
     sy = Math.round((videoRealH - regionRealWH)/2);
@@ -417,69 +421,79 @@ var loopReadVideo = function(){
   }
 
   var barcodeReader = new dynamsoft.BarcodeReader();
-  barcodeReader.updateRuntimeSettings(testRuntimeSettingsReader.getRuntimeSettings()).then(()=>{
+  barcodeReader.updateRuntimeSettings(testRuntimeSettingsReader.getRuntimeSettings()).then(function() {
     return barcodeReader.decodeVideo(video,sx,sy,sWidth,sHeight,dWidth,dHeight);
-}).then((results)=>{
+  }).then(function(results) {
     if(self.kConsoleLog)self.kConsoleLog('time cost: ' + ((new Date()).getTime() - timestart) + 'ms');
-  var bestConfidence = 0, bestTxt = undefined, txtArr = [];
-  for(let i=0;i<results.length;++i){
-    var result = results[i];
-    if(self.kConsoleLog)self.kConsoleLog(result.BarcodeText);
-    var confidence = result.LocalizationResult.ExtendedResultArray[0].Confidence;
-    if(confidence > 30){
-      txtArr.push(result.BarcodeText);
-      if(confidence > bestConfidence){
-        bestConfidence = confidence;
-        bestTxt = result.BarcodeText;
+  
+    var bestConfidence = 0, bestTxt = undefined, txtArr = [];
+    for(let i=0;i<results.length;++i){
+      var result = results[i];
+      if(self.kConsoleLog)self.kConsoleLog(result.BarcodeText);
+      
+      var confidence = result.LocalizationResult.ExtendedResultArray[0].Confidence;
+      if(confidence > 30) {
+        txtArr.push(result.BarcodeText);
+
+        if(confidence > bestConfidence) {
+          bestConfidence = confidence;
+          bestTxt = result.BarcodeText;
+        }
       }
     }
-  }
 
-  //add to top log
-  var $divTopLog = $('#div-topLog');
-  for(let i = 0; i < txtArr.length; ++i){
-    var pTopLog = document.createElement("p");
-    pTopLog.style.display = 'none';
-    pTopLog.innerText = txtArr[i];
-    $divTopLog.append(pTopLog);
-    $(pTopLog).slideDown();
-    var pTopLogs = $divTopLog.children();
-    if(pTopLogs.length > $divTopLog.height() / $(pTopLogs[0]).outerHeight(true)){
-      $(pTopLogs[0]).remove();
+    //add to top log
+    var $divTopLog = $('#div-topLog');
+    for(let i = 0; i < txtArr.length; ++i){
+      var pTopLog = document.createElement("p");
+      
+      pTopLog.style.display = 'none';
+      pTopLog.innerText = txtArr[i];
+      $divTopLog.append(pTopLog);
+      $(pTopLog).slideDown();
+      
+      var pTopLogs = $divTopLog.children();
+      if(pTopLogs.length > $divTopLog.height() / $(pTopLogs[0]).outerHeight(true)) {
+        $(pTopLogs[0]).remove();
+      }
     }
-  }
-  if(bestTxt){
-    if(!bestTxt.startsWith('http') && (
+
+    if(bestTxt){
+      if(!bestTxt.startsWith('http') && (
         bestTxt.startsWith('www') ||
         -1 != bestTxt.indexOf('.com') ||
         -1 != bestTxt.indexOf('.net') ||
         -1 != bestTxt.indexOf('.org') ||
         -1 != bestTxt.indexOf('.edu')
       )){
-      bestTxt = 'http://' + bestTxt;
-    }
-    if($('#div-highLightResult').children('a,span')[0].innerText != bestTxt){
-      var a;
-      if(bestTxt.startsWith('http')){
-        a = document.createElement('a');
-        a.href = bestTxt;
-      }else{
-        a = document.createElement('span');
+        bestTxt = 'http://' + bestTxt;
       }
-      a.innerText = bestTxt;
-      $('#div-highLightResult')[0].innerHTML = "";
-      $('#div-highLightResult').append(a);
-    }
-  }
 
-  barcodeReader.deleteInstance();
-  setTimeout(loopReadVideo, readInterval);
-}).catch(ex=>{
+      if($('#div-highLightResult').children('a,span')[0].innerText != bestTxt) {
+        var a;
+      
+        if(bestTxt.startsWith('http')) {
+          a = document.createElement('a');
+          a.href = bestTxt;
+        } else {
+          a = document.createElement('span');
+        }
+
+        a.innerText = bestTxt;
+        $('#div-highLightResult')[0].innerHTML = "";
+        $('#div-highLightResult').append(a);
+      }
+    }
+
     barcodeReader.deleteInstance();
-  if(self.kConsoleLog)self.kConsoleLog(ex);
-  setTimeout(loopReadVideo, readInterval);
-  throw ex;
-});
+    setTimeout(loopReadVideo, readInterval);
+  }).catch(function(ex) {
+    barcodeReader.deleteInstance();
+
+    if(self.kConsoleLog)self.kConsoleLog(ex);
+    setTimeout(loopReadVideo, readInterval);
+    throw ex;
+  });
 };
 
 $('#btn-settings').click(function(){
