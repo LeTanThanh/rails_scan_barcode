@@ -13,7 +13,7 @@ dynamsoft.dbrEnv.onAutoLoadWasmSuccess = function() {
     initTestRuntimeSettings().then(function() {
       self.isLooping = true;
       playvideo().then(loopReadVideo, function(ex) {
-        alert("Please make sure the camera is connected and the site is deployed in https: "+(ex.message || ex));
+        alert("Please make sure the camera is connected and the site is deployed in https: "+ (ex.message || ex));
       });
     });
   }
@@ -24,31 +24,33 @@ dynamsoft.dbrEnv.onAutoLoadWasmSuccess = function() {
 };
 
 dynamsoft.dbrEnv.onAutoLoadWasmError = function(ex) {
-  alert("load wasm failed: "+(ex.message||ex));
+  alert("load wasm failed: "+(ex.message || ex));
 };
 
-$('#frame-supportAndSetting input').change(function(){
-  if($('#frame-supportAndSetting input:checked').length){
+$('#frame-supportAndSetting input').change(function() {
+  if($('#frame-supportAndSetting input:checked').length) {
     $('#btn-processSupportAndSettings').removeAttr('disabled');
-  }else{
+  }else {
     $('#btn-processSupportAndSettings').attr('disabled', 'disabled');
   }
 });
 
 var preSelBarcodeFormat = 0;
-$('#btn-processSupportAndSettings').click(function(){
+$('#btn-processSupportAndSettings').click(function() {
   $('#frame-supportAndSetting').fadeOut();
+
   var checkedIpts = $('#frame-supportAndSetting input:checked');
-  checkedIpts.each(function(){
+  checkedIpts.each(function() {
     preSelBarcodeFormat = preSelBarcodeFormat | this.value;
   });
-  if(bDbrWasmLoadSuccess){
-    initTestRuntimeSettings().then(()=>{
+
+  if(bDbrWasmLoadSuccess) {
+    initTestRuntimeSettings().then(function() {
       self.isLooping = true;
-    playvideo().then(loopReadVideo, ex=>{
-      alert("Please make sure the camera is connected and the site is deployed in https: "+(ex.message || ex));
-  });
-  });
+      playvideo().then(loopReadVideo, function() {
+        alert("Please make sure the camera is connected and the site is deployed in https: "+(ex.message || ex));
+      });
+    });
   }
 });
 
