@@ -537,33 +537,36 @@ $('#div-menuRightMargin').click(function() {
 $('#ipt-file').change(function(){
   isLooping = false;
   var barcodeReader = new dynamsoft.BarcodeReader();
-  barcodeReader.updateRuntimeSettings(testRuntimeSettingsReader.getRuntimeSettings()).then(()=>{
+  barcodeReader.updateRuntimeSettings(testRuntimeSettingsReader.getRuntimeSettings()).then(function() {
     var i = -1;
-  var files = this.files;
-  var message = [];
-  var readOne = ()=>{
-    if(++i == files.length){
-      barcodeReader.deleteInstance();
-      alert(message.join('\n'));
-      isLooping = true;
-      loopReadVideo();
-      this.value = '';
-      return;
-    }
+    var files = this.files;
+    var message = [];
+    var readOne = function() {
+      if(++i == files.length) {
+        barcodeReader.deleteInstance();
+        alert(message.join('\n'));
+        isLooping = true;
+        loopReadVideo();
+        this.value = '';
+        return;
+      }
 
-    var file = files[i];
-    if(message.length){message.push('\n');}
-    message.push(file.name+':');
-    barcodeReader.decodeFileInMemory(file).then(results=>{
-      for(let j=0;j<results.length;++j){
-      message.push(results[j].BarcodeText);
-    }
-    readOne();
-  }).catch(ex=>{
-      message.push("Error: "+(ex.message || ex));
+      var file = files[i];
+      if(message.length) {
+        message.push('\n');
+      }
+
+      message.push(file.name+':');
+      barcodeReader.decodeFileInMemory(file).then(function(results) {
+        for(let j=0;j<results.length;++j){
+          message.push(results[j].BarcodeText);
+        }
+        readOne();
+      }).catch(function(ex) {
+        message.push("Error: "+(ex.message || ex));
+        readOne();
+      });
+    };
     readOne();
   });
-  };
-  readOne();
-});
 });
