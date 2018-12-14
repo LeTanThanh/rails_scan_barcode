@@ -253,11 +253,13 @@ $('#a-clearCache').click(function(){
 });
 
 var needFixEdge = false;
-(function(){
+(function() {
   var indexEdge = navigator.userAgent.toLowerCase().indexOf('edge/');
-  if(-1 != indexEdge){
+
+  if(-1 != indexEdge) {
     var indexDot = navigator.userAgent.indexOf('.', indexEdge);
     var edgeVersion = navigator.userAgent.substring(indexEdge+5, indexDot);
+
     if(edgeVersion < 30){
       needFixEdge = true;
       // I supposed Edge fix object-fit bug on video after version 30 (>_<)
@@ -275,6 +277,7 @@ var needFixEdge = false;
     }
   }
 })();
+
 var playvideo = (deviceId)=>{
   return new Promise((resolve,reject)=>{
       var video = $('#video-back')[0];
