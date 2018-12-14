@@ -56,52 +56,59 @@ $('#btn-processSupportAndSettings').click(function() {
 
 var $ulVideoList = $('#ul-videoList');
 var ulVideoList = $ulVideoList[0];
-var updateDevice = function(){
-  return new Promise(resolve=>{
-      navigator.mediaDevices.enumerateDevices().then(deviceInfos=>{
+var updateDevice = function() {
+  return new Promise(function(resolve) {
+    navigator.mediaDevices.enumerateDevices().then(function(deviceInfos) {
       var $oldSelLi = $ulVideoList.children('.selectedLi');
-  var oldVal = $oldSelLi.length ? $oldSelLi[0].dataVal : undefined ;
-  ulVideoList.innerHTML = "";
-  var selLi = undefined;
-  for(var i = 0; i < deviceInfos.length; ++i){
-    var info = deviceInfos[i];
-    if(info.kind != 'videoinput'){
-      continue;
-    }
-    var li = document.createElement('li');
-    $(li).addClass('li-videoSource');
-    var a = document.createElement('a');
-    li.dataVal = info.deviceId;
-    a.innerText = info.label || 'camera '+ i;
-    $(li).append(a);
-    $ulVideoList.append(li);
-    if(oldVal == info.deviceId){
-      selLi = li;
-    }
-  }
-  var liArr = $ulVideoList.children();
-  if(!selLi && liArr.length){
-    try{
-      $('#video-back')[0].srcObject.getTracks().forEach((track)=>{
-        if('video' == track.kind){
-        liArr.each(function(){
-          if(track.label == this.innerText){
-            selLi = this;
-            throw 'found the using source';
-          }
-        });
+      var oldVal = $oldSelLi.length ? $oldSelLi[0].dataVal : undefined ;
+      ulVideoList.innerHTML = "";
+      var selLi = undefined;
+      
+      for(var i = 0; i < deviceInfos.length; ++i) {
+        var info = deviceInfos[i];
+        if(info.kind != 'videoinput'){
+          continue;
+        }
+
+        var li = document.createElement('li');
+        $(li).addClass('li-videoSource');
+        var a = document.createElement('a');
+        li.dataVal = info.deviceId;
+        a.innerText = info.label || 'camera '+ i;
+        $(li).append(a);
+        $ulVideoList.append(li);
+        if(oldVal == info.deviceId){
+          selLi = li;
+        }
       }
+
+      var liArr = $ulVideoList.children();
+
+      if(!selLi && liArr.length) {
+        try{
+          $('#video-back')[0].srcObject.getTracks().forEach(function(track) {
+            if('video' == track.kind){
+              liArr.each(function() {
+                if(track.label == this.innerText) {
+                  selLi = this;
+                  throw 'found the using source';
+                }
+              });
+            }
+          });
+        } catch(ex) {
+          if(self.kConsoleLog) {
+            self.kConsoleLog(ex);
+          }
+        }
+      }
+
+      if(selLi){
+        $(selLi).addClass('selectedLi');
+      }
+      resolve();
     });
-    }catch(ex){
-      if(self.kConsoleLog){self.kConsoleLog(ex);}
-    }
-  }
-  if(selLi){
-    $(selLi).addClass('selectedLi');
-  }
-  resolve();
-});
-});
+  });
 };
 
 $ulVideoList.on('click','.li-videoSource', function(){
