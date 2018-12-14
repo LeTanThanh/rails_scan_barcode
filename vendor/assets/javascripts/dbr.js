@@ -210,21 +210,24 @@ $('#ul-barcodeFormatId>.li-barcodeFormatId').click(function() {
   testRuntimeSettingsReader.updateRuntimeSettings(settings);
 });
 
-$('#ul-advance input').change(function(){
+$('#ul-advance input').change(function() {
   var ipt = this;
   var settings = testRuntimeSettingsReader.getRuntimeSettings();
   var field = 'm'+$(ipt).closest('li').text();
   var oldVal = settings[field];
-  if(typeof oldVal == 'number'){
+
+  if(typeof oldVal == 'number') {
     settings[field] = parseInt(ipt.value);
-  }else{
+  } else {
     settings[field] = ipt.value;
   }
-  testRuntimeSettingsReader.updateRuntimeSettings(settings).catch(ex=>{
+
+  testRuntimeSettingsReader.updateRuntimeSettings(settings).catch(function(ex) {
     ipt.value = oldVal;
-  alert(ex.message || ex);
+    alert(ex.message || ex);
+  });
 });
-});
+
 $('#a-clearCache').click(function(){
   var oldText = this.innerText;
   this.innerText = 'clearing...';
