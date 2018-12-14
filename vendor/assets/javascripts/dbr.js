@@ -1,34 +1,29 @@
-/* global dynamsoft, $, Foundation*/
 var bPC = !navigator.userAgent.match(/(iPad)|(iPhone)|(iPod)|(android)|(webOS)/i);
 var bMobileSafari = /Safari/.test(navigator.userAgent) && /iPhone/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
 
-// By default, js will load `dbr-<version>.min.js` & `dbr-<version>.wasm` in the same folder as the context.
-// `dbr-<version>.min.js` & `dbr-<version>.wasm` should always put in same folder.
-// Modify this setting when you put `dbr-<version>.min.js` & `dbr-<version>.wasm` somewhere else.
-// dynamsoft.dbrEnv.resourcesPath = window.location.origin + "/assets";
 dynamsoft.dbrEnv.resourcesPath = "https://demo.dynamsoft.com/dbr_wasm/js";
-
-// https://www.dynamsoft.com/CustomerPortal/Portal/TrialLicense.aspx
 dynamsoft.dbrEnv.licenseKey = "t0068NQAAAGnfgzXR9nmc28s7F7vx0qYFkvNNOaXJqIiclD0AglImcbq+EXyJwvEfk0jp8+Fgq3YXei+xIzAOfaEDxWxxUIw=";
-
-dynamsoft.dbrEnv.bUseWorker = true; //uncomment it to use worker
+dynamsoft.dbrEnv.bUseWorker = true;
 
 var bDbrWasmLoadSuccess = false;
-dynamsoft.dbrEnv.onAutoLoadWasmSuccess = function(){
+dynamsoft.dbrEnv.onAutoLoadWasmSuccess = function() {
   bDbrWasmLoadSuccess = true;
+
   if(preSelBarcodeFormat){
-    initTestRuntimeSettings().then(()=>{
+    initTestRuntimeSettings().then(function() {
       self.isLooping = true;
-    playvideo().then(loopReadVideo, ex=>{
-      alert("Please make sure the camera is connected and the site is deployed in https: "+(ex.message || ex));
-  });
-  });
+      playvideo().then(loopReadVideo, function(ex) {
+        alert("Please make sure the camera is connected and the site is deployed in https: "+(ex.message || ex));
+      });
+    });
   }
+
   $('#div-highLightResult span').text('reading...');
   $('#frame-loadingAnimation').hide();
   $('.disableOnWasmLoading').removeClass('disableOnWasmLoading');
 };
-dynamsoft.dbrEnv.onAutoLoadWasmError = function(ex){
+
+dynamsoft.dbrEnv.onAutoLoadWasmError = function(ex) {
   alert("load wasm failed: "+(ex.message||ex));
 };
 
