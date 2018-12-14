@@ -278,93 +278,106 @@ var needFixEdge = false;
   }
 })();
 
-var playvideo = (deviceId)=>{
-  return new Promise((resolve,reject)=>{
-      var video = $('#video-back')[0];
+var playvideo = function(deviceId) {
+  return new Promise(function(resolve,reject) {
+    var video = $('#video-back')[0];
 
-  if (video.srcObject) {
-    if(self.kConsoleLog)self.kConsoleLog('======stop video========');
-    video.srcObject.getTracks().forEach(function(track) {
-      track.stop();
-    });
-  }
+    if (video.srcObject) {
+      if(self.kConsoleLog)self.kConsoleLog('======stop video========');
+      video.srcObject.getTracks().forEach(function(track) {
+        track.stop();
+      });
+    }
 
-  if(self.kConsoleLog)self.kConsoleLog('======before video========');
-  var selW = $('#ul-resolutionList .selectedLi').attr('data-width');
-  var selH = $('#ul-resolutionList .selectedLi').attr('data-height');
-  var constraints = {
-    video: {
-      facingMode: { ideal: 'environment' }
-    }
-  };
-  if(bMobileSafari){
-    if(selH >= 1280){
-      constraints.video.width = 1280;
-    }else if(selH >= 640){
-      constraints.video.width = 640;
-    }else if(selH >= 320){
-      constraints.video.width = 320;
-    }
-  }else{
-    var bWinWLtH = $(window).width() < $(window).height();
-    constraints.video.width = { ideal: bWinWLtH ? selW : selH };
-    constraints.video.height = { ideal: bWinWLtH ? selH : selW };
-  }
-  if(!deviceId){
-    var $selectedLi = $ulVideoList.children('.selectedLi');
-    if($selectedLi.length){
-      deviceId = $selectedLi[0].dataVal;
-    }
-  }
-  if(deviceId){
-    constraints.video.facingMode = undefined;
-    constraints.video.deviceId = {exact: deviceId};
-  }
-
-  var hasTryedNoWidthHeight = false;
-  var getAndPlayVideo = ()=>{
-    if(self.kConsoleLog)self.kConsoleLog('======try getUserMedia========');
-    navigator.mediaDevices.getUserMedia(constraints).then((stream)=>{
-      if(self.kConsoleLog)self.kConsoleLog('======get video========');
-    return new Promise((resolve2, reject2)=>{
-      video.srcObject = stream;
-    video.onloadedmetadata = ()=>{
-      if(self.kConsoleLog)self.kConsoleLog('======play video========');
-      video.play().then(()=>{
-        if(self.kConsoleLog)self.kConsoleLog('======played video========');
-      if(needFixEdge){
-        var dw = $(document).width(), dh = $(document).height();
-        if(video.videoWidth / video.videoHeight > dw / dh){
-          video.style.width = Math.round(video.videoWidth / video.videoHeight * dh) + 'px';
-          video.style.height = dh + 'px';
-        }else{
-          video.style.width = dw + 'px';
-          video.style.height = Math.round(video.videoHeight / video.videoWidth * dw) + 'px';
-        }
+    if(self.kConsoleLog)self.kConsoleLog('======before video========');
+    var selW = $('#ul-resolutionList .selectedLi').attr('data-width');
+    var selH = $('#ul-resolutionList .selectedLi').attr('data-height');
+    
+    var constraints = {
+      video: {
+        facingMode: { ideal: 'environment' }
       }
-      resolve2();
-    },(ex)=>{
-        reject2(ex);
+    };
+
+    if(bMobileSafari) {
+      if(selH >= 1280) {
+        constraints.video.width = 1280;
+      } else if(selH >= 640) {
+        constraints.video.width = 640;
+      } else if(selH >= 320) {
+        constraints.video.width = 320;
+      }
+    } else {
+      var bWinWLtH = $(window).width() < $(window).height();
+      constraints.video.width = { ideal: bWinWLtH ? selW : selH };
+      constraints.video.height = { ideal: bWinWLtH ? selH : selW };
+    }
+
+    if(!deviceId){
+      var $selectedLi = $ulVideoList.children('.selectedLi');
+      if($selectedLi.length){
+        deviceId = $selectedLi[0].dataVal;
+      }
+    }
+  
+    if(deviceId){
+      constraints.video.facingMode = undefined;
+      constraints.video.deviceId = {exact: deviceId};
+    }
+
+    var hasTryedNoWidthHeight = false;
+    var getAndPlayVideo = function() {
+      if(self.kConsoleLog)self.kConsoleLog('======try getUserMedia========');
+    
+      navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+        if(self.kConsoleLog)self.kConsoleLog('======get video========');
+
+        return new Promise(function(resolve2, reject2) {
+          video.srcObject = stream;
+          
+          video.onloadedmetadata = function() {
+            if(self.kConsoleLog)self.kConsoleLog('======play video========');
+            
+            video.play().then(function() {
+              if(self.kConsoleLog)self.kConsoleLog('======played video========');
+            
+              if(needFixEdge){
+                var dw = $(document).width(), dh = $(document).height();
+                if(video.videoWidth / video.videoHeight > dw / dh){
+                  video.style.width = Math.round(video.videoWidth / video.videoHeight * dh) + 'px';
+                  video.style.height = dh + 'px';
+                } else {
+                  video.style.width = dw + 'px';
+                  video.style.height = Math.round(video.videoHeight / video.videoWidth * dw) + 'px';
+                }
+              }
+              resolve2();
+            }, function(ex) {
+              reject2(ex);
+            });
+          };
+
+          video.onerror = function() {
+            reject2();
+          };
+        });
+      }).then(function() {
+        resolve();
+      }).catch(function(ex) {
+        if(self.kConsoleLog)self.kConsoleLog(ex);
+      
+        if(!hasTryedNoWidthHeight) {
+          hasTryedNoWidthHeight = true;
+          constraints.video.width = undefined;
+          constraints.video.height = undefined;
+          getAndPlayVideo();
+        } else {
+          reject(ex);
+        }
       });
     };
-    video.onerror = ()=>{reject2();};
+    getAndPlayVideo();
   });
-  }).then(()=>{
-      resolve();
-  }).catch((ex)=>{
-      if(self.kConsoleLog)self.kConsoleLog(ex);
-    if(!hasTryedNoWidthHeight){
-      hasTryedNoWidthHeight = true;
-      constraints.video.width = undefined;
-      constraints.video.height = undefined;
-      getAndPlayVideo();
-    }else{
-      reject(ex);
-    }
-  });
-  };
-  getAndPlayVideo();
-});
 };
 
 var isLooping = false;
