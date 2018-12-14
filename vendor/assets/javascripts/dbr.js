@@ -232,18 +232,20 @@ $('#a-clearCache').click(function(){
   var oldText = this.innerText;
   this.innerText = 'clearing...';
   $(this).addClass('disableOnWasmLoading');
+ 
   try{
     var request = window.indexedDB.deleteDatabase('dynamsoft');
-    request.onsuccess = request.onerror = ()=>{
+    request.onsuccess = request.onerror = function() {
       if(request.error){
         alert('Clear failed: '+(request.error.message || request.error));
-      }else{
+      } else {
         alert('Clear success!');
       }
+
       this.innerText = oldText;
       $(this).removeClass('disableOnWasmLoading');
     };
-  }catch(ex){
+  } catch(ex){
     alert(ex.message || ex);
     this.innerText = oldText;
     $(this).removeClass('disableOnWasmLoading');
