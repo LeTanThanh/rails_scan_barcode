@@ -114,16 +114,17 @@ var updateDevice = function() {
 $ulVideoList.on('click','.li-videoSource', function(){
   $ulVideoList.children('.selectedLi').removeClass('selectedLi');
   $(this).addClass('selectedLi');
-  playvideo(this.dataVal).catch(ex=>{
+  playvideo(this.dataVal).catch(function(ex) {
     alert(ex.message || ex);
+  });
 });
-});
+
 $('#ul-resolutionList').on('click','.li-resolution', function(){
   $('#ul-resolutionList .selectedLi').removeClass('selectedLi');
   $(this).addClass('selectedLi');
-  playvideo().catch(ex=>{
+  playvideo().catch(function(ex) {
     alert(ex.message || ex);
-});
+  });
 });
 
 var bReadFullRegion = false;
@@ -140,8 +141,15 @@ $('#cb-readFullRegion').change(function(){
     $('#btn-readFullRegion').show();
   }
 });
-$('#btn-readFullRegion').click(function(){$('#lb-readFullRegion').click();});
-$('#btn-readInRegion').click(function(){$('#lb-readFullRegion').click();});
+
+$('#btn-readFullRegion').click(function() {
+  $('#lb-readFullRegion').click();
+});
+
+$('#btn-readInRegion').click(function() {
+  $('#lb-readFullRegion').click();
+});
+
 if(bPC){ // use upper resolution & read full region on PC
   $('#ul-resolutionList .selectedLi').removeClass('selectedLi');
   $('#ul-resolutionList .li-resolution[data-width="1080"][data-height="1920"]').addClass('selectedLi');
