@@ -157,53 +157,59 @@ if(bPC){ // use upper resolution & read full region on PC
 }
 
 var readInterval = 10;
-$('#ul-interval').on('click','.li-interval', function(){
+$('#ul-interval').on('click','.li-interval', function() {
   $('#ul-interval .selectedLi').removeClass('selectedLi');
   $(this).addClass('selectedLi');
   readInterval = $(this).attr('data-val');
 });
 
 var testRuntimeSettingsReader = null;
-var initTestRuntimeSettings = function(){
+var initTestRuntimeSettings = function() {
   testRuntimeSettingsReader = new dynamsoft.BarcodeReader();
   var settings = testRuntimeSettingsReader.getRuntimeSettings();
   settings.mBarcodeFormatIds = preSelBarcodeFormat;
   return testRuntimeSettingsReader.updateRuntimeSettings(settings);
 };
-$('#a-barcodeFormat').click(function(){
+
+$('#a-barcodeFormat').click(function() {
   var settings = testRuntimeSettingsReader.getRuntimeSettings();
-  $('#ul-barcodeFormatId>.li-barcodeFormatId').each(function(){
+
+  $('#ul-barcodeFormatId>.li-barcodeFormatId').each(function() {
     var value = $(this).attr('data-val');
-    if((settings.mBarcodeFormatIds & value) == value){
+    if((settings.mBarcodeFormatIds & value) == value) {
       $(this).addClass('selectedLi');
-    }else{
+    } else {
       $(this).removeClass('selectedLi');
     }
   });
 });
-$('#a-advance').click(function(){
+
+$('#a-advance').click(function() {
   var settings = testRuntimeSettingsReader.getRuntimeSettings();
 
-  $('#ul-advance>li>a>label').each(function(){
+  $('#ul-advance>li>a>label').each(function() {
     $(this).children('input').val(settings['m'+$(this).text()]);
   });
 });
-$('#ul-barcodeFormatId>.li-barcodeFormatId').click(function(){
+
+$('#ul-barcodeFormatId>.li-barcodeFormatId').click(function() {
   var li = this;
   var settings = testRuntimeSettingsReader.getRuntimeSettings();
-  if($(li).hasClass('selectedLi')){
-    if(1 != $('#ul-barcodeFormatId>.selectedLi').length){
+
+  if($(li).hasClass('selectedLi')) {
+    if(1 != $('#ul-barcodeFormatId>.selectedLi').length) {
       $(li).removeClass('selectedLi');
       settings.mBarcodeFormatIds = settings.mBarcodeFormatIds & (~$(li).attr('data-val'));
-    }else{
+    } else {
       alert('Please select at least one barcode format!');
     }
-  }else{
+  } else {
     $(li).addClass('selectedLi');
     settings.mBarcodeFormatIds = settings.mBarcodeFormatIds | $(li).attr('data-val');
   }
   testRuntimeSettingsReader.updateRuntimeSettings(settings);
 });
+
 $('#ul-advance input').change(function(){
   var ipt = this;
   var settings = testRuntimeSettingsReader.getRuntimeSettings();
