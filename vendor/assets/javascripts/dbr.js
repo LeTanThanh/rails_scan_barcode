@@ -496,15 +496,26 @@ var loopReadVideo = function() {
   });
 };
 
-$('#btn-settings').click(function(){
+$('#btn-settings').click(function() {
   isLooping = false;
-  updateDevice().then(()=>{
+  updateDevice().then(function() {
     $('#frame-menu').animate(
-    {width:"show",paddingLeft:"show",paddingRight:"show",marginLeft:"show",marginRight:"show"},
-    {complete:()=>{Foundation.reInit($('#ul-menu'));}}
-  );
+      {
+        width:"show",
+        paddingLeft:"show",
+        paddingRight:"show",
+        marginLeft:"show",
+        marginRight:"show"
+      },
+      {
+        complete:function() {
+          Foundation.reInit($('#ul-menu'));
+        }
+      }
+    );
+  });
 });
-});
+
 $('#div-menuRightMargin').click(function(){
   isLooping = true;
   $('#frame-menu').animate(
