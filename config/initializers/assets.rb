@@ -10,4 +10,4 @@ Rails.application.config.assets.paths << Rails.root.join("node_modules")
 Rails.application.config.assets.paths << Rails.root.join("vendor")
 
 Rails.application.config.assets.precompile += %w(foundation.min.css style.css)
-Rails.application.config.assets.precompile += %w(foundation.min.js dbr-6.4.1.1.min.js)
+Rails.application.config.assets.precompile += %w(foundation.min.js dbr-6.4.1.1.min.js dbr.js)
