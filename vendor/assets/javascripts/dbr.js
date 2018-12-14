@@ -427,7 +427,7 @@ var loopReadVideo = function() {
     if(self.kConsoleLog)self.kConsoleLog('time cost: ' + ((new Date()).getTime() - timestart) + 'ms');
   
     var bestConfidence = 0, bestTxt = undefined, txtArr = [];
-    for(let i=0;i<results.length;++i){
+    for(var i=0;i<results.length;++i){
       var result = results[i];
       if(self.kConsoleLog)self.kConsoleLog(result.BarcodeText);
       
@@ -444,7 +444,7 @@ var loopReadVideo = function() {
 
     //add to top log
     var $divTopLog = $('#div-topLog');
-    for(let i = 0; i < txtArr.length; ++i){
+    for(var i = 0; i < txtArr.length; ++i){
       var pTopLog = document.createElement("p");
       
       pTopLog.style.display = 'none';
@@ -558,7 +558,7 @@ $('#ipt-file').change(function(){
 
       message.push(file.name+':');
       barcodeReader.decodeFileInMemory(file).then(function(results) {
-        for(let j=0;j<results.length;++j){
+        for(var j=0;j<results.length;++j){
           message.push(results[j].BarcodeText);
         }
         readOne();
