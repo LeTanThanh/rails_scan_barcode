@@ -516,13 +516,24 @@ $('#btn-settings').click(function() {
   });
 });
 
-$('#div-menuRightMargin').click(function(){
+$('#div-menuRightMargin').click(function() {
   isLooping = true;
   $('#frame-menu').animate(
-    {width:"hide",paddingLeft:"hide",paddingRight:"hide",marginLeft:"hide",marginRight:"hide"},
-    {complete:()=>{loopReadVideo();}}
+    {
+      width:"hide",
+      paddingLeft:"hide",
+      paddingRight:"hide",
+      marginLeft:"hide",
+      marginRight:"hide"
+    },
+    {
+      complete: function() {
+        loopReadVideo();
+      }
+    }
   );
 });
+
 $('#ipt-file').change(function(){
   isLooping = false;
   var barcodeReader = new dynamsoft.BarcodeReader();
